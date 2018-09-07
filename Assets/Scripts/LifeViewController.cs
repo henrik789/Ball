@@ -6,7 +6,7 @@ public class LifeViewController : MonoBehaviour
 {
 
     [SerializeField]
-    private int lives = 4;
+    private int lives = 3;
     public float distance = 0.7f;
 
     private void Start()

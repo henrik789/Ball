@@ -11,13 +11,10 @@
 
 
         public List<Transform> positions = new List<Transform>();
-        float moveDelay = 0.7f;
-        int currentPosition = 2;
+        public float moveDelay = 0.7f;
+        int currentPosition = 4;
         int direction = 1;
         int counter = 0;
-
-
-
 
         void Start()
         {
@@ -26,6 +23,7 @@
 
             StartCoroutine(Move());
         }
+
 
 
 
@@ -61,15 +59,7 @@
             counter++;
             direction *= -1;
 
-            if (counter % 5 == 1)
-            {
-                moveDelay /= 1.5f;
-
-            }
-            Debug.Log("Time: " + moveDelay);
-            Debug.Log("" + counter);
-
-        }
+    }
 
 
         void Die()
