@@ -1,47 +1,61 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
-
+    private BallController ballController1;
+    private BallController ballController2;
+    private BallController ballcontroller3;
 
     public PointsController pointsController;
-    public LifeViewController lifeController;
     public GameObject ball1;
     public GameObject ball2;
     public GameObject ball3;
+    public GameObject gameover;
     public AnimationCurve difficulty;
-    float speed = 0.7f;
+    float speed = 0.8f;
     int points = 0;
-    //bool gameOver = false;
+    AudioSource m_MyAudioSource; 
+    public bool m_play;
+    bool gameOver = false;
 
-     
+
+
+    //Application
     void Start () {
+    
+            gameover.gameObject.SetActive(false);
+            ball3.gameObject.SetActive(false);
+            m_MyAudioSource = GetComponent<AudioSource>();
 
-        lifeController.RestoreAllLives();
-        ball3.gameObject.SetActive(false);
+        ballController1 = ball1.GetComponentInChildren<BallController>();
+        ballController2 = ball2.GetComponentInChildren<BallController>();
+        ballcontroller3 = ball3.GetComponentInChildren<BallController>();
 
-        if (ball1.GetComponentInChildren<BallController>() != null)
-        {
-            ball1.GetComponentInChildren<BallController>().moveDelay = speed;
-        }
-        if (ball2.GetComponentInChildren<BallController>() != null)
-        {
-            ball2.GetComponentInChildren<BallController>().moveDelay = speed;
-        }
-        if (ball3.GetComponentInChildren<BallController>() != null)
-        {
-            ball3.GetComponentInChildren<BallController>().moveDelay = speed;
-        }
 
+
+            if (ballController1 != null)
+            {
+                ballController1.moveDelay = speed;
+            }
+            if (ballController2 != null)
+            {
+                ballController2.moveDelay = speed;
+            }
+            if (ballcontroller3 != null)
+            {
+                ballcontroller3.moveDelay = speed;
+            }
 
 
     }
 
+
     void SetBallThreeActive(){
         if (ball3.gameObject != null)
         {
-            if (points >= 6)
+            if (points >= 2)
             {
                 ball3.gameObject.SetActive(true);
             }
@@ -56,15 +70,17 @@ public class GameManager : MonoBehaviour {
         RaycastHit2D hit = Physics2D.Raycast(ball.transform.position, Vector2.down);
         if (hit.collider != null)
         {
-            //Debug.Log("Not Miss");
             BallSaved();
             return false;
 
         }
         else
         {
-            //Debug.Log("Miss");
-            LoseOneLife();
+            ballController1.Stop();
+            ballController2.Stop();
+            ballcontroller3.Stop();
+            gameover.gameObject.SetActive(true);
+            gameOver = true;
             return true;
         }
     }
@@ -72,18 +88,19 @@ public class GameManager : MonoBehaviour {
     void BallSaved(){
         points++;
         pointsController.SetPoint(points);
+        m_MyAudioSource.Play();
         SetBallThreeActive();
         IncreaseSpeed();
     }
 
     void IncreaseSpeed(){
 
-        if (points < 100)
-        {
-            //Debug.Log("speed " + difficulty.Evaluate(points / 100));
-        }
+        //if (points < 100)
+        //{
+        //    Debug.Log("speed " + difficulty.Evaluate(points / 50));
+        //}
 
-        speed -= (1f - difficulty.Evaluate( points / 100.0f)) * 0.1f;
+        speed -= (1f - difficulty.Evaluate( points / 100.0f)) * 0.06f;
         Debug.Log("Movedelay: " + speed);
 
 
@@ -100,25 +117,20 @@ public class GameManager : MonoBehaviour {
             ball3.GetComponentInChildren<BallController>().moveDelay = speed;
         }
 
-
-        //ball1.GetComponentInChildren<BallController>().moveDelay = speed;
-        //ball2.GetComponentInChildren<BallController>().moveDelay = speed;
-        //ball3.GetComponentInChildren<BallController>().moveDelay = speed;
-
-
     }
-
-    void LoseOneLife()
+    void NewGame()
     {
-        if (!lifeController.RemoveLife())
-        {
-            Debug.Log("Game Over!");
-            //gameOver = true;
-        }
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
     }
 
-    void Update () {
-
+    void Update() 
+    {
+        if(gameOver != false )
+        if (Input.anyKey)
+        {
+            NewGame();
+        }
 
     }
 }
